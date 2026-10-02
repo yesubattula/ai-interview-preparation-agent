@@ -2,14 +2,25 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
-# Load API key from .env
+# Load .env when running locally
 load_dotenv(override=True)
 
+# Get API key from local .env
 api_key = os.getenv("OPENAI_API_KEY")
 
+# If running on Streamlit Cloud, get API key from Streamlit Secrets
+if not api_key:
+    try:
+        import streamlit as st
+        api_key = st.secrets["OPENAI_API_KEY"]
+    except Exception:
+        api_key = None
+
+# Check API key
 if not api_key:
     raise ValueError(
-        "OPENAI_API_KEY was not found. Check your .env file."
+        "OPENAI_API_KEY was not found. "
+        "Add it to .env locally or Streamlit Secrets when deployed."
     )
 
 # Create OpenAI client
